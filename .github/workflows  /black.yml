@@ -1,0 +1,59 @@
+name: Black_formatter
+
+on:
+  push:
+    branches:
+      - master
+  # pull_request:
+  #   branches:
+  #     - master
+
+jobs:
+  formatter:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+      - name: Check if formatting is needed
+        id: check-format
+        uses: psf/black@stable
+        continue-on-error: true
+        with:
+          options: "--check -t py310 -t py311"
+          src: "./src"
+          jupyter: true
+          version: "~= 23.11"
+      - name: Black formatting
+        # if: ${{ failure() }}
+        if: steps.check-format.outcome == 'failure'
+        uses: psf/black@stable
+        with:
+          options: "--verbose -t py310 -t py311"
+          src: "./src"
+          jupyter: true
+          version: "~= 23.11"
+      - name: Create Pull Request
+        # if: ${{ failure() }}
+        if: steps.check-format.outcome == 'failure'
+        uses: EndBug/add-and-commit@v9
+        with:
+          committer_name: GitHub Actions
+          committer_email: 41898282+github-actions[bot]@users.noreply.github.com
+          # author_name: ${{ github.actor }}
+          # author_email: ${{ github.actor }}@users.noreply.github.com
+          add: "./src"
+          message: "Ran Black formatted on python code in ./src/\n\nThere appeared to be some python formatting in ${{ github.sha }} that did not conform with Black's formatting standards. So Black(https://github.com/psf/black) formatter was used to fix these issues."
+
+
+
+        # uses: peter-evans/create-pull-request@v5
+        # with:
+        #   token: ${{ secrets.GITHUB_TOKEN }}
+        #   title: "Formatted Python code with Black"
+        #   commit-message: "Ran Black formatted on python code in ./src/"
+        #   body: |
+        #     There appeared to be some python formatting in ${{ github.sha }} that did not conform with Black's formatting standards.
+        #     So [Black](https://github.com/psf/black) formatter was used to fix these issues.
+        #   base: ${{ github.head_ref }}
+        #   branch: github-actions/black
+      
