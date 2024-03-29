@@ -1,18 +1,19 @@
 import pandas as pd
 from scipy.stats import f_oneway
-#disable pandas future warning
+
+# disable pandas future warning
 pd.options.mode.chained_assignment = None  # default='warn'
+
 
 class LimeEval:
     @staticmethod
-    def evaluate_stability(inst, model_prob, explainer_lime,  instances=10):
+    def evaluate_stability(inst, model_prob, explainer_lime, instances=10):
         # Explaination stability test
         explainations = []
 
         for i in range(instances):
             exp_inst = explainer_lime.explain_instance(inst, model_prob, num_features=7)
             explainations += [exp_inst.as_list()]
-
 
         # Extracting unique categories
         categories = sorted({item[0] for sublist in explainations for item in sublist})
@@ -32,7 +33,9 @@ class LimeEval:
         return df
 
     @staticmethod
-    def compare_experiments(df_exp0, df_exp1, p_value_cutoff=0.05, allcols=True, mean=True):
+    def compare_experiments(
+        df_exp0, df_exp1, p_value_cutoff=0.05, allcols=True, mean=True
+    ):
         """
         Compares the variances of two experiments using F-test.
 
@@ -45,7 +48,7 @@ class LimeEval:
         None
         """
 
-        #replace all nan in df_exp0 and df_exp1 with 0
+        # replace all nan in df_exp0 and df_exp1 with 0
         df_exp0 = df_exp0.fillna(0)
         df_exp1 = df_exp1.fillna(0)
 
@@ -55,16 +58,28 @@ class LimeEval:
 
             for column in df_exp0.columns:
                 f_statistic, p_value = f_oneway(df_exp0[column], df_exp1[column])
-                variance_relation = "HIGHER" if df_exp1[column].var() > df_exp0[column].var() else "LOWER"
+                variance_relation = (
+                    "HIGHER"
+                    if df_exp1[column].var() > df_exp0[column].var()
+                    else "LOWER"
+                )
 
                 # Formatting the F-statistic and p-value to 4 decimal places
                 f_statistic_formatted = f"{f_statistic:.4f}"
                 p_value_formatted = f"{p_value:.6f}"
 
                 if p_value < p_value_cutoff:
-                    significant_results[column] = (f_statistic_formatted, p_value_formatted, variance_relation)
+                    significant_results[column] = (
+                        f_statistic_formatted,
+                        p_value_formatted,
+                        variance_relation,
+                    )
                 else:
-                    non_significant_results[column] = (f_statistic_formatted, p_value_formatted, variance_relation)
+                    non_significant_results[column] = (
+                        f_statistic_formatted,
+                        p_value_formatted,
+                        variance_relation,
+                    )
 
             print("Experiment all columns:")
             print("-------------------------")
@@ -72,37 +87,51 @@ class LimeEval:
             print("Significant Results:")
             for variable, (f_stat, p_val, var_rel) in significant_results.items():
                 print(
-                    f"{variable:35} F-statistic = {f_stat:10} p-value = {p_val:10} Variance is {var_rel} in modified experiment")
+                    f"{variable:35} F-statistic = {f_stat:10} p-value = {p_val:10} Variance is {var_rel} in modified experiment"
+                )
 
             # Print a separator for clarity
             print("\nNon-Significant Results:")
             # Print the non-significant results
             for variable, (f_stat, p_val, var_rel) in non_significant_results.items():
                 print(
-                    f"{variable:35} F-statistic = {f_stat:10} p-value = {p_val:10} Variance is {var_rel} in modified experiment")
+                    f"{variable:35} F-statistic = {f_stat:10} p-value = {p_val:10} Variance is {var_rel} in modified experiment"
+                )
 
         if mean:
             df0mean = (abs(df_exp0)).mean(axis=1)
-            df0mean = pd.DataFrame(df0mean, columns=['mean'])
+            df0mean = pd.DataFrame(df0mean, columns=["mean"])
 
             df1mean = (abs(df_exp1)).mean(axis=1)
-            df1mean = pd.DataFrame(df1mean, columns=['mean'])
+            df1mean = pd.DataFrame(df1mean, columns=["mean"])
 
             significant_results = {}
             non_significant_results = {}
 
             for column in df0mean.columns:
                 f_statistic, p_value = f_oneway(df0mean[column], df1mean[column])
-                variance_relation = "HIGHER" if df1mean[column].var() > df0mean[column].var() else "LOWER"
+                variance_relation = (
+                    "HIGHER"
+                    if df1mean[column].var() > df0mean[column].var()
+                    else "LOWER"
+                )
 
                 # Formatting the F-statistic and p-value to 4 decimal places
                 f_statistic_formatted = f"{f_statistic:.4f}"
                 p_value_formatted = f"{p_value:.6f}"
 
                 if p_value < p_value_cutoff:
-                    significant_results[column] = (f_statistic_formatted, p_value_formatted, variance_relation)
+                    significant_results[column] = (
+                        f_statistic_formatted,
+                        p_value_formatted,
+                        variance_relation,
+                    )
                 else:
-                    non_significant_results[column] = (f_statistic_formatted, p_value_formatted, variance_relation)
+                    non_significant_results[column] = (
+                        f_statistic_formatted,
+                        p_value_formatted,
+                        variance_relation,
+                    )
 
             print("\nExperiment squared mean")
             print("-------------------------")
@@ -110,11 +139,13 @@ class LimeEval:
             print("Significant Results:")
             for variable, (f_stat, p_val, var_rel) in significant_results.items():
                 print(
-                    f"{variable:35} F-statistic = {f_stat:10} p-value = {p_val:10} Variance is {var_rel} in modified experiment")
+                    f"{variable:35} F-statistic = {f_stat:10} p-value = {p_val:10} Variance is {var_rel} in modified experiment"
+                )
 
             # Print a separator for clarity
             print("\nNon-Significant Results:")
             # Print the non-significant results
             for variable, (f_stat, p_val, var_rel) in non_significant_results.items():
                 print(
-                    f"{variable:35} F-statistic = {f_stat:10} p-value = {p_val:10} Variance is {var_rel} in modified experiment")
+                    f"{variable:35} F-statistic = {f_stat:10} p-value = {p_val:10} Variance is {var_rel} in modified experiment"
+                )
