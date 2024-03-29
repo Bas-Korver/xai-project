@@ -3,27 +3,18 @@ import numpy as np
 import seaborn as sns
 from collections import Counter
 
-class Plots: 
 
-
-
+class Plots:
     def histogram_DrugUse(dataset, categories):
-        
- 
-
         sns.set(style="darkgrid")
-      
+
         variables = [0, 0, 0, 0, 0, 0]
         variables_overclaiming = [0, 0, 0, 0, 0, 0]
 
-
         num_categories = len(categories)
-
 
         bar_positions = np.arange(num_categories)
 
-
-      
         for row in dataset:
             for i in range(8, 14):
                 # daily users who do not claim to have used the fictional drug
@@ -35,26 +26,22 @@ class Plots:
                 elif row[i] == "1" and row[14] == "1":
                     variables_overclaiming[i - 8] += 1
 
-
         print(variables)
         print(variables_overclaiming)
 
-
         plt.bar(
-        bar_positions,
-        variables_overclaiming,
-        alpha=0.3,
+            bar_positions,
+            variables_overclaiming,
+            alpha=0.3,
         )
 
-
         plt.bar(
-        bar_positions,
-        variables,
-        alpha=1.0,
+            bar_positions,
+            variables,
+            alpha=1.0,
         )
 
         plt.xticks(ticks=range(len(categories)), labels=categories)
-
 
         plt.xlabel("Substances")
         plt.ylabel("Users in the last day")
@@ -62,10 +49,7 @@ class Plots:
 
         plt.show()
 
-
     def piechart_extraversion(dataset):
-        
-
         extraversion_values = []
         values = [0, 0, 0]
         for row in dataset:
@@ -79,20 +63,15 @@ class Plots:
                 elif e > 0.00016 + 0.99745:
                     values[2] += 1
 
-
         class_counts = Counter(extraversion_values)
 
         class_labels = ["low", "medium,", "high"]
         plt.figure(figsize=(6, 6))
         plt.pie(values, labels=class_labels, startangle=140)
         plt.title("Pie Chart for Extraversion scores among all the instances")
-        plt.axis("equal")    
+        plt.axis("equal")
 
     def piechart_extr_subst(dataset, categories):
-        
-
-
-
         j = 0
         for i in range(8, 14):
             extraversion_values = []
@@ -118,14 +97,12 @@ class Plots:
             plt.axis("equal")
             j += 1
 
-
     def histograms_personality_density(dataset, scores):
-        
-
         fig, axes = plt.subplots(2, 4, figsize=(15, 10))
 
         for idx, ((score, (mean, std_dev, min_val, max_val)), ax) in enumerate(
-            zip(scores.items(), axes.flatten()) ):
+            zip(scores.items(), axes.flatten())
+        ):
             samples = [float(row[idx + 1]) for row in dataset]
 
             num_unique_elem = len(set(samples))
@@ -137,10 +114,14 @@ class Plots:
             bins = [min_val + i * bar_width for i in range(num_bins + 1)]
 
             # Filter values within one standard deviation
-            in_range = [val for val in samples if mean - std_dev <= val <= mean + std_dev]
+            in_range = [
+                val for val in samples if mean - std_dev <= val <= mean + std_dev
+            ]
 
             # Filter values outside one standard deviation
-            out_range = [val for val in samples if val < mean - std_dev or val > mean + std_dev]
+            out_range = [
+                val for val in samples if val < mean - std_dev or val > mean + std_dev
+            ]
 
             # Plot bars within one standard deviation in one color
             ax.hist(in_range, bins=bins, alpha=0.8, color="orange")
