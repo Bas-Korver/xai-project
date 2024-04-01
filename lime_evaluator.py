@@ -12,8 +12,8 @@ class LimeEval:
         explainations = []
 
         for i in range(instances):
-            exp_inst = explainer_lime.explain_instance(inst, model_prob, num_features=7)
-            explainations += [exp_inst.as_list()]
+            exp_inst = explainer_lime.explain_instance(inst, model_prob, num_features=7, labels=[0])
+            explainations += [exp_inst.as_list(label=0)]
 
         # Extracting unique categories
         categories = sorted({item[0] for sublist in explainations for item in sublist})
