@@ -46,7 +46,7 @@ class Plots:
 
         plt.xlabel("Substances")
         plt.ylabel("Users in the last day")
-        plt.title("People that have used a specific drug during the last day")
+        plt.title("People that have used a specific drug during the last day, week and month")
 
         plt.show()
 
