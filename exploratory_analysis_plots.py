@@ -2,6 +2,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 import seaborn as sns
 from collections import Counter
+import pandas as pd
 
 
 class Plots:
@@ -45,7 +46,9 @@ class Plots:
 
         plt.xlabel("Substances")
         plt.ylabel("Users in the last day")
-        plt.title("People that have used a specific drug during the last day")
+        plt.title(
+            "People that have used a specific drug during the last day, week and month"
+        )
 
         plt.show()
 
@@ -122,17 +125,41 @@ class Plots:
             out_range = [
                 val for val in samples if val < mean - std_dev or val > mean + std_dev
             ]
-
+            colors = sns.color_palette("deep")
             # Plot bars within one standard deviation in one color
-            ax.hist(in_range, bins=bins, alpha=0.8, color="orange")
-            print(in_range)
+            ax.hist(in_range, bins=bins, alpha=1.0, color=colors[0])
+
             # Plot bars outside one standard deviation in another color
-            ax.hist(out_range, bins=bins, alpha=0.8, color="lightcoral")
+            ax.hist(out_range, bins=bins, alpha=1.0, color=colors[1])
 
             ax.set_title(score)
             ax.set_xlabel("Value")
-            ax.set_ylabel("Density")
+            ax.set_ylabel("Nr_istances")
             ax.grid(True)
 
         plt.tight_layout()
+        plt.show()
+
+    def heatmap(dataset, scores):
+        df = pd.read_csv(dataset, delimiter=",", header=None)
+
+        df = df.apply(pd.to_numeric, errors="coerce")
+        df = df.drop(df.columns[[0, 8, 9, 10, 11, 12, 13, 14]], axis=1)
+        #  Calculate the correlation matrix
+        correlation_matrix = df.corr()
+
+        # Visualize the correlation matrix
+        plt.figure(figsize=(10, 8))
+        var_names = scores.keys()
+        sns.heatmap(
+            correlation_matrix,
+            annot=True,
+            cmap="coolwarm",
+            fmt=".2f",
+            alpha=0.6,
+            xticklabels=var_names,
+            yticklabels=var_names,
+        )
+
+        plt.title("Correlation Matrix")
         plt.show()
