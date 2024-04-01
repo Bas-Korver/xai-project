@@ -126,7 +126,7 @@ class Plots:
             colors = sns.color_palette("deep")
             # Plot bars within one standard deviation in one color
             ax.hist(in_range, bins=bins, alpha=1.0, color=colors[0])
-        
+
             # Plot bars outside one standard deviation in another color
             ax.hist(out_range, bins=bins, alpha=1.0, color=colors[1])
 
@@ -137,20 +137,27 @@ class Plots:
 
         plt.tight_layout()
         plt.show()
-    
 
     def heatmap(dataset, scores):
-        df = pd.read_csv(dataset, delimiter=',', header=None)
-                            
-        df = df.apply(pd.to_numeric, errors='coerce')
+        df = pd.read_csv(dataset, delimiter=",", header=None)
+
+        df = df.apply(pd.to_numeric, errors="coerce")
         df = df.drop(df.columns[[0, 8, 9, 10, 11, 12, 13, 14]], axis=1)
         #  Calculate the correlation matrix
         correlation_matrix = df.corr()
 
-        # Visualize the correlation matrix 
+        # Visualize the correlation matrix
         plt.figure(figsize=(10, 8))
         var_names = scores.keys()
-        sns.heatmap(correlation_matrix, annot=True, cmap='coolwarm', fmt=".2f", alpha=0.6, xticklabels=var_names, yticklabels=var_names)
+        sns.heatmap(
+            correlation_matrix,
+            annot=True,
+            cmap="coolwarm",
+            fmt=".2f",
+            alpha=0.6,
+            xticklabels=var_names,
+            yticklabels=var_names,
+        )
 
-        plt.title('Correlation Matrix')
+        plt.title("Correlation Matrix")
         plt.show()
